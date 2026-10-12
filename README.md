@@ -8,16 +8,16 @@ Team participation sheet	[FILL: link]
 Technical report (PDF)	docs/technical_report.pdf
 GitHub repository	[FILL: link]
 
-Team: [FILL: team name]
+Team: Urban Mobility Team 
 
 Member	Area	Main files
-[FILL]	Data cleaning / ETL	backend/etl.py, backend/config.py
-[FILL]	Database	backend/schema.sql, backend/indexes.sql, backend/export_dump.py
-[FILL]	API and custom algorithm	backend/app.py, backend/algorithms.py, backend/test_algorithms.py
-[FILL]	Frontend	frontend/index.html, frontend/style.css, frontend/app.js
+Batsinda Keynes Benoit:	Data cleaning / ETL	backend/etl.py, backend/config.py
+Batsinde Ange Liana:	Database	backend/schema.sql, backend/indexes.sql, backend/export_dump.py
+Nshmiyimana Abdurahim: API and custom algorithm	backend/app.py, backend/algorithms.py, backend/test_algorithms.py
+Mucyo Joel:	Frontend	frontend/index.html, frontend/style.css, frontend/app.js
 
 ## Project Structure
-```text
+
 nyc-mobility/
 ├── backend/
 │   ├── app.py              # Flask REST API server

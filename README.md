@@ -49,9 +49,9 @@ Modern web browser (Chrome, Firefox, Edge, or Safari)
 1. Clone or Open the Repository
 Navigate to the root directory containing requirements.txt:
 
-Bash
 cd nyc-mobility
-2. Install Dependencies
+
+# Install Dependencies
 Install all required Python packages:
 
 Bash
@@ -59,8 +59,7 @@ pip install -r requirements.txt
 3. Run the ETL Pipeline & Initialize Database
 Process the raw data files, execute cleaning routines, generate derived features, and populate the database:
 
-Bash
-python backend/etl.py
+#python backend/etl.py
 4. Launch the Backend API Server
 Start the Flask application server:
 
@@ -68,5 +67,5 @@ Bash
 python backend/app.py
 (The backend server will run locally at http://localhost:5000)
 
-5. Launch the Frontend Dashboard
+# Launch the Frontend Dashboard
 Open frontend/index.html directly in your web browser, or serve it via a local live server (e.g., VS Code Live Server) to interact with the dashboard, apply filters, and explore mobility insights.

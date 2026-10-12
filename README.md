@@ -7,17 +7,17 @@ A full-stack analytics app for the NYC TLC Yellow Taxi dataset. A Python ETL pip
 | Item | Link |
 |---|---|
 | Video walkthrough (5 min) | [FILL: link] |
-| Team participation sheet | [FILL: link] |
+| Team participation sheet | [https://docs.google.com/spreadsheets/d/1pbdxDTtdyF7nlpAUSKCkYObltIw4WgmeUej3bc9oQ4I/edit?usp=sharing] |
 | Technical report (PDF) | `docs/technical_report.pdf` |
-| GitHub repository | [FILL: link] |
+| GitHub repository  | [FILL: link] |
 
 ## Team: Urban Mobility Team
 
 | Member | Area | Main files |
 |---|---|---|
-| Batsinda Keynes Benoit | Data cleaning / ETL | `backend/etl.py`, `backend/config.py` |
+| Nshimiyimana Abdurahim| Data cleaning / ETL | `backend/etl.py`, `backend/config.py` |
 | Batsinde Ange Liana | Database | `backend/schema.sql`, `backend/indexes.sql`, `backend/export_dump.py` |
-| Nshmiyimana Abdurahim | API and custom algorithm | `backend/app.py`, `backend/algorithms.py`, `backend/test_algorithms.py` |
+|  Batsinda Keynes Benoit | API and custom algorithm | `backend/app.py`, `backend/algorithms.py`, `backend/test_algorithms.py` |
 | Mucyo Joel | Frontend | `frontend/index.html`, `frontend/style.css`, `frontend/app.js` |
 
 

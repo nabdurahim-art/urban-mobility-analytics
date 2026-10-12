@@ -38,14 +38,14 @@ nyc-mobility/
 ├── requirements.txt        # Python dependencies
 └── README.md               # Setup and execution instructions
 
-###Prerequisites & Requirements
+#Prerequisites & Requirements
 Python 3.9 or higher
 
 Pip (Python package manager)
 
 Modern web browser (Chrome, Firefox, Edge, or Safari)
 
-#### Installation & Setup Instructions
+# Installation & Setup Instructions
 1. Clone or Open the Repository
 Navigate to the root directory containing requirements.txt:
 

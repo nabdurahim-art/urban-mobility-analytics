@@ -20,20 +20,7 @@ A full-stack analytics app for the NYC TLC Yellow Taxi dataset. A Python ETL pip
 | Nshmiyimana Abdurahim | API and custom algorithm | `backend/app.py`, `backend/algorithms.py`, `backend/test_algorithms.py` |
 | Mucyo Joel | Frontend | `frontend/index.html`, `frontend/style.css`, `frontend/app.js` |
 
-## Table of contents
 
-1. [Prerequisites](#prerequisites)
-2. [Installation and setup](#installation-and-setup)
-3. [Verify it works](#verify-it-works)
-4. [Project structure](#project-structure)
-5. [Data pipeline](#data-pipeline)
-6. [Database design](#database-design)
-7. [Custom algorithm](#custom-algorithm-top-k-busiest-zones-and-routes)
-8. [API reference](#api-reference)
-9. [Dashboard](#dashboard)
-10. [Known limitations](#known-limitations)
-11. [Configuration](#configuration)
-12. [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
 
@@ -103,28 +90,6 @@ nyc-mobility/
 ├── requirements.txt         # Python dependencies
 └── README.md                # This file
 ```
-
-## Data pipeline
-
-1. **Integration.** Trips are joined to `taxi_zone_lookup.csv` (borough, zone, service zone) and to the `taxi_zones` polygons through `LocationID`. Lookup tables are created for vendor, rate code and payment type.
-2. **Cleaning.** Each row is tagged with the first rule it breaks, so every exclusion has exactly one reason:
-
-| Reason | Rule |
-|---|---|
-| `missing_critical` | Null timestamp, zone, distance, fare or total |
-| `duplicate` | Same vendor, timestamps, zones, distance and fare as an earlier row |
-| `unknown_zone` | Zone not in the lookup, or Unknown / Outside NYC (264, 265) |
-| `bad_timestamp` | Dropoff not after pickup |
-| `out_of_period` | Pickup outside the month(s) holding at least 5% of the rows |
-| `duration_too_long` / `duration_too_short` | Over 6 hours / under 30 seconds |
-| `bad_distance` | 0 or less, or over 100 miles |
-| `bad_fare` | Fare 0 or less or over $500, or total 0 or less |
-| `negative_charge` | Negative tip, tolls, extra or MTA tax |
-| `bad_passengers` | 0 or more than 6 passengers (nulls are kept as NULL, not imputed) |
-| `speed_outlier` | Average speed over 80 mph |
-
-3. **Normalisation.** Timestamps become `YYYY-MM-DD HH:MM:SS`, money is rounded to cents, and unknown vendor, rate and payment codes map to explicit "Unknown" rows in their lookup tables.
-4. **Transparency log.** Every excluded row is written to `logs/excluded_records.csv`. Per-reason counts are stored in the `cleaning_summary` table, a sample of rows in `excluded_records`, and the counts are shown in the dashboard sidebar.
 
 ### Engineered features
 

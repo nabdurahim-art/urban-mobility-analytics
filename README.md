@@ -97,6 +97,63 @@ nyc-mobility/
 |---|---|---|
 | `speed_mph` | distance ÷ duration | Congestion proxy by hour and zone, and the best outlier detector |
 | `fare_per_mile` | fare_amount ÷ distance | Pricing efficiency; exposes short-trip minimums and airport flat fares |
+
+## Database Design & Architecture
+
+The application utilizes a relational database structured around a normalized **3NF (Third Normal Form)** design:
+
+* **Dimension Tables:** `borough`, `service_zone`, `zone` (housing embedded GeoJSON spatial geometries), `vendor`, `rate_code`, and `payment_type`.
+* **Fact Table:** `trip`, which includes foreign keys linked to all dimension tables.
+
+### Performance Indexing
+To ensure rapid analytical queries, performance indexes are built **after** the bulk data insertion phase, which significantly reduces index build time:
+* `pickup_ts`
+* `(pickup_date, pickup_hour)`
+* `(pu_zone_id, pickup_date)`
+* `do_zone_id`
+* `trip_distance`
+* `fare_amount`
+* `(pickup_dow, pickup_hour)`
+
+### Database Export & Dumps
+To export a database dump deliverable containing the complete schema, lookup tables, and a 1,000-row sample of trips, run:
+```bash
+python backend/export_dump.py
 | `tip_pct` | tip ÷ fare × 100, card payments only | Generosity by place and time. Cash tips are never recorded, so cash is NULL, not 0 |
+
+API
+
+All endpoints accept the same filters: date_from, date_to, hour_from, hour_to, day_type (weekday/weekend), borough, pu_zone, payment_type, min_distance, max_distance, min_fare, max_fare.
+
+Endpoint	Returns
+GET /api/meta	date range, trip count, boroughs
+GET /api/summary	trips, avg fare/distance/duration/speed/tip %, revenue
+GET /api/hourly	trips, speed, fare per hour of day
+GET /api/heatmap	trips by day-of-week x hour
+GET /api/zones	per-zone pickups, dropoffs, avg fare, avg speed
+GET /api/geojson	zone polygons
+GET /api/tips	avg tip % by borough x time bucket
+GET /api/top?kind=zone|route&k=10	Top-K via the custom algorithm
+GET /api/trips?sort=&order=&page=&page_size=	paginated, sortable trip rows
+GET /api/cleaning	exclusion counts per rule
 | `pickup_hour`, `pickup_dow`, `is_weekend`, `time_bucket` | From the pickup timestamp | Temporal context for rush-hour and weekend analysis |
+
+## Dashboard & Interactive Features
+
+The frontend dashboard is fully driven by a comprehensive filter set (date, hour, weekday/weekend, borough, distance, and fare) that updates all UI components dynamically:
+* **KPI Strip & Visuals:** Displays key metrics alongside an hourly demand-versus-speed chart, tipping breakdown by time of day and borough, and a weekly demand heatmap.
+* **Interactive Choropleth Map:** Switchable between total pickups, drop-offs, average fare, and average speed. Clicking any zone on the map instantly filters all dashboard views to pickups originating from that zone.
+* **Top-K Analytics & Trip Explorer:** Surfaces top-performing zones and routes alongside a fully sortable, paginated trip data explorer.
+
+---
+
+## Known Limitations & Design Trade-Offs
+
+* **Top-K Processing Speed:** The `/api/top` endpoint streams matching trips through our custom Python hash table and heap structures. On a full month's dataset, this is slower than a native SQL `GROUP BY` statement. This is a deliberate trade-off to fulfill the assignment requirement for a manual algorithmic implementation; the API response explicitly reports `rows_scanned` and `elapsed_ms` for transparency.
+* **Strategic Denormalization:** Derived columns (`pickup_date`, `pickup_hour`, `time_bucket`, `is_weekend`, `speed`, `fare_per_mile`, `tip_pct`) are pre-stored directly in the table to accelerate dashboard filtering. Note that core lookup tables (zones, vendors, rate codes, payment types) remain fully normalized in 3NF.
+* **Time Bucket Granularity:** The `time_bucket` field classifies hours based on standard weekday patterns and ignores weekends (e.g., Sunday at 8:00 AM is labelled `"morning_rush"`). However, `is_weekend` is stored as a separate column so the dashboard can accurately filter weekend dynamics.
+* **Tipping Data Constraints:** Because cash tips are not tracked by TLC meters, `tip_pct` is calculated exclusively for credit-card transactions.
+* **Network Requirements:** The dashboard requires active internet access to load Leaflet, Chart.js, online map tiles, and Google Fonts.
+* **Database Choice:** SQLite is used to ensure zero-setup project reproducibility; a true production environment would scale up to PostgreSQL with PostGIS extensions.
+
 

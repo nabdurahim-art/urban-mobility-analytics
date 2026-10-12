@@ -7,7 +7,7 @@ A full-stack analytics app for the NYC TLC Yellow Taxi dataset. A Python ETL pip
 | Item | Link |
 |---|---|
 | Video walkthrough (5 min) | [FILL: link] |
-| Team participation sheet | [https://docs.google.com/spreadsheets/d/15Sz4TBO8d6fXeJ1PU95Zj8LHh8p3loeepdafaxbFk9I/edit?gid=0#gid=0] |
+| Team participation sheet | https://docs.google.com/spreadsheets/d/15Sz4TBO8d6fXeJ1PU95Zj8LHh8p3loeepdafaxbFk9I/edit?gid=0#gid=0 |
 | Technical report (PDF) | `docs/technical_report.pdf` |
 | GitHub repository  | [FILL: link] |
 

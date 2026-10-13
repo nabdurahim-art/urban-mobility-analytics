@@ -1,159 +1,318 @@
-# NYC Taxi Mobility Explorer
+# Urban Mobility Data Explorer
 
-A full-stack analytics app for the NYC TLC Yellow Taxi dataset. A Python ETL pipeline cleans the raw data and loads it into a normalized SQLite database, a Flask REST API serves it, and a browser dashboard (HTML, CSS, JavaScript, Leaflet, Chart.js) lets you explore urban mobility patterns.
+An interactive web dashboard for exploring NYC Yellow Taxi trip data (January 2019). Built with Python Flask, PostgreSQL, and vanilla JavaScript with Chart.js.
 
 ## Links
 
 | Item | Link |
-|---|---|
-| Video walkthrough (5 min) | [FILL: link] |
+| --- | --- |
+| Video walkthrough (5 min) | [FILL: video link] |
+| GitHub repository | https://github.com/nabdurahim-art/urban-mobility-analytics |
 | Team participation sheet | https://docs.google.com/spreadsheets/d/15Sz4TBO8d6fXeJ1PU95Zj8LHh8p3loeepdafaxbFk9I/edit?gid=0#gid=0 |
-| Technical report (PDF) | `docs/technical_report.pdf` |
-| GitHub repository  | [FILL: link] |
+| Technical report (PDF) | [FILL: e.g. docs/technical_report.pdf] |
 
-## Team: Urban Mobility Team
+## Team
 
-| Member | Area | Main files |
-|---|---|---|
-| Nshimiyimana Abdurahim| Data cleaning / ETL | `backend/etl.py`, `backend/config.py` |
-| Batsinde Ange Liana | Database | `backend/schema.sql`, `backend/indexes.sql`, `backend/export_dump.py` |
-|  Batsinda Keynes Benoit | API and custom algorithm | `backend/app.py`, `backend/algorithms.py`, `backend/test_algorithms.py` |
-| Mucyo Joel | Frontend | `frontend/index.html`, `frontend/style.css`, `frontend/app.js` |
+**Team name:** Urban Mobility Team
 
+| Member | Area |
+| --- | --- |
+| Nshimiyimana Abdurahim | Data cleaning and feature engineering |
+| Batsinde Ange Liana | Database design and loading |
+| Batsinda Keynes Benoit | Backend API and custom algorithms |
+| Mucyo Joel | Frontend dashboard |
 
+> Check that each member's area matches what they actually built, and add anyone missing (for example the GitHub owner, Abdull-Kudus).
 
-## Prerequisites
+## What It Does
 
-- Python 3.9 or higher
-- pip (Python package manager)
-- A modern web browser (Chrome, Firefox, Edge or Safari) with internet access, because the dashboard loads Leaflet, Chart.js, map tiles and fonts from CDNs
-- Roughly 4 GB of free RAM for a full month of trips (use `--limit` for a smaller test run)
-- No database server is needed: SQLite ships with Python
+- Cleans and processes 7.6 million raw taxi trip records
+- Stores the data in a normalized PostgreSQL database
+- Serves the data through a Flask REST API
+- Displays an interactive dashboard with charts, filters, and a trip records table
 
-## Installation and setup
+## Tech Stack
 
-Run every command from the project root (the folder containing `backend/` and `frontend/`).
+| Layer | Technology |
+| --- | --- |
+| Data processing | Python (cleaning and feature engineering scripts) |
+| Database | PostgreSQL 14+ |
+| Backend | Python 3.10+, Flask REST API |
+| Frontend | HTML, CSS, vanilla JavaScript, Chart.js 4.4 (CDN), Inter font (Google Fonts) |
 
-### 1. Get the code and install dependencies
+## Database Schema (ERD)
+
+![ERD Diagram](docs/erd_diagram_urban_mobility.png)
+
+## Project Structure
+
+```
+Urban-mobility-data-Explorer/
+├── backend/                  # Flask API
+│   ├── app/
+│   │   ├── api/              # Route handlers (trips, analytics)
+│   │   └── db/               # Database connection
+│   ├── config.py             # Loads environment variables
+│   ├── requirements.txt      # Python dependencies
+│   └── run.py                # Starts the Flask server
+├── data/                     # Data processing scripts
+│   ├── clean_tripdata.py     # Cleans and validates raw trip data
+│   ├── feature_engineering.py# Adds derived columns
+│   ├── data_pipeline.py      # Runs cleaning + engineering in order
+│   └── taxi_zone_lookup.csv  # Zone dimension table
+├── database/                 # SQL schema files
+├── docs/                     # ERD diagram and documentation
+├── frontend/                 # Web dashboard
+│   ├── index.html            # Main page
+│   ├── styles.css            # Styling
+│   └── dashboard.js          # Charts, table, and filters
+├── load_trips.py             # Loads cleaned CSV into PostgreSQL
+├── .env.EXAMPLE              # Template for environment variables
+└── README.md
+```
+
+## Requirements
+
+- Python 3.10 or higher
+- PostgreSQL 14 or higher
+- A modern web browser (Chrome, Firefox, Edge) with internet access, because the dashboard loads Chart.js and fonts from CDNs
+- About 2 GB of free disk space for the raw and cleaned CSV files
+- Enough RAM to process a 7.6 million row CSV (8 GB recommended)
+
+## Setup Instructions
+
+Run every command from the project root unless stated otherwise.
+
+### 1. Clone the repository
 
 ```bash
-cd nyc-mobility
-python -m venv venv
-source venv/bin/activate          # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+git clone https://github.com/Abdull-Kudus/Urban-mobility-data-Explorer.git
+cd Urban-mobility-data-Explorer
 ```
 
-```
-
-### 4. Start the backend and the dashboard
+### 2. Create a virtual environment
 
 ```bash
-python backend/app.py
+python -m venv .venv
 ```
 
-Open **http://localhost:5000** in your browser. Flask serves both the API and the dashboard, so there is nothing else to launch.
+Activate it:
 
-> **Do not open `frontend/index.html` by double-clicking it.** The page calls `/api/...` on its own address, so from a `file://` address it cannot reach the backend. If you want to serve the frontend from another static server (for example VS Code Live Server), open it with `?api=http://localhost:5000` added to the address.
+- Windows: `.venv\Scripts\activate`
+- Mac/Linux: `source .venv/bin/activate`
 
-## Verify it works
-
-In a second terminal, with the server running:
+### 3. Install Python dependencies
 
 ```bash
-python backend/test_algorithms.py                        # prints: all algorithm tests passed
-curl http://localhost:5000/api/meta                      # date range, trip count, boroughs
-curl "http://localhost:5000/api/top?kind=zone&k=5"       # top 5 pickup zones from the custom algorithm
+pip install -r backend/requirements.txt
 ```
 
-Then open the dashboard: the KPI strip, map and charts should fill within a few seconds. On a full month the Top-K panel is slower than the others (see [Known limitations](#known-limitations)).
+### 4. Set up environment variables
 
-## Project structure
+Copy the example file and fill in your PostgreSQL credentials:
 
-```
-nyc-mobility/
-├── backend/
-│   ├── app.py               # Flask REST API and static file server
-│   ├── algorithms.py        # Hand-written HashCounter, MinHeap and top_k
-│   ├── config.py            # Paths and cleaning thresholds (environment-overridable)
-│   ├── etl.py               # Ingest, clean, normalise, engineer features, load database
-│   ├── export_dump.py       # Exports the database dump for submission
-│   ├── schema.sql           # Normalized relational schema
-│   ├── indexes.sql          # Indexes, created after the bulk load
-│   └── test_algorithms.py   # Checks the algorithms against Python built-ins
-├── frontend/
-│   ├── index.html           # Dashboard layout
-│   ├── style.css            # Styling (responsive layout)
-│   └── app.js               # API calls, filters, map and chart rendering
-├── data/                    # Raw inputs and generated mobility.db (git-ignored)
-├── docs/                    # build_report.py, VIDEO_SCRIPT.md, TEAM_SHEET_CONTENT.md, figures
-├── logs/                    # excluded_records.csv (generated by the ETL)
-├── requirements.txt         # Python dependencies
-└── README.md                # This file
-```
-
-### Engineered features
-
-| Feature | Formula | Why it matters |
-|---|---|---|
-| `speed_mph` | distance ÷ duration | Congestion proxy by hour and zone, and the best outlier detector |
-| `fare_per_mile` | fare_amount ÷ distance | Pricing efficiency; exposes short-trip minimums and airport flat fares |
-
-## Database Design & Architecture
-
-The application utilizes a relational database structured around a normalized **3NF (Third Normal Form)** design:
-
-* **Dimension Tables:** `borough`, `service_zone`, `zone` (housing embedded GeoJSON spatial geometries), `vendor`, `rate_code`, and `payment_type`.
-* **Fact Table:** `trip`, which includes foreign keys linked to all dimension tables.
-
-### Performance Indexing
-To ensure rapid analytical queries, performance indexes are built **after** the bulk data insertion phase, which significantly reduces index build time:
-* `pickup_ts`
-* `(pickup_date, pickup_hour)`
-* `(pu_zone_id, pickup_date)`
-* `do_zone_id`
-* `trip_distance`
-* `fare_amount`
-* `(pickup_dow, pickup_hour)`
-
-### Database Export & Dumps
-To export a database dump deliverable containing the complete schema, lookup tables, and a 1,000-row sample of trips, run:
 ```bash
-python backend/export_dump.py
-| `tip_pct` | tip ÷ fare × 100, card payments only | Generosity by place and time. Cash tips are never recorded, so cash is NULL, not 0 |
+cp .env.EXAMPLE .env
+```
 
-API
+Edit `.env`:
 
-All endpoints accept the same filters: date_from, date_to, hour_from, hour_to, day_type (weekday/weekend), borough, pu_zone, payment_type, min_distance, max_distance, min_fare, max_fare.
+```
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=urban_mobility
+DB_USER=postgres
+DB_PASSWORD=your_password_here
+DB_SSLMODE=disable
+```
 
-Endpoint	Returns
-GET /api/meta	date range, trip count, boroughs
-GET /api/summary	trips, avg fare/distance/duration/speed/tip %, revenue
-GET /api/hourly	trips, speed, fare per hour of day
-GET /api/heatmap	trips by day-of-week x hour
-GET /api/zones	per-zone pickups, dropoffs, avg fare, avg speed
-GET /api/geojson	zone polygons
-GET /api/tips	avg tip % by borough x time bucket
-GET /api/top?kind=zone|route&k=10	Top-K via the custom algorithm
-GET /api/trips?sort=&order=&page=&page_size=	paginated, sortable trip rows
-GET /api/cleaning	exclusion counts per rule
-| `pickup_hour`, `pickup_dow`, `is_weekend`, `time_bucket` | From the pickup timestamp | Temporal context for rush-hour and weekend analysis |
+Never commit your real `.env` file.
 
-## Dashboard & Interactive Features
+### 5. Create the database
 
-The frontend dashboard is fully driven by a comprehensive filter set (date, hour, weekday/weekend, borough, distance, and fare) that updates all UI components dynamically:
-* **KPI Strip & Visuals:** Displays key metrics alongside an hourly demand-versus-speed chart, tipping breakdown by time of day and borough, and a weekly demand heatmap.
-* **Interactive Choropleth Map:** Switchable between total pickups, drop-offs, average fare, and average speed. Clicking any zone on the map instantly filters all dashboard views to pickups originating from that zone.
-* **Top-K Analytics & Trip Explorer:** Surfaces top-performing zones and routes alongside a fully sortable, paginated trip data explorer.
+Open PostgreSQL and run:
 
----
+```sql
+CREATE DATABASE urban_mobility;
+```
 
-## Known Limitations & Design Trade-Offs
+Or use Python:
 
-* **Top-K Processing Speed:** The `/api/top` endpoint streams matching trips through our custom Python hash table and heap structures. On a full month's dataset, this is slower than a native SQL `GROUP BY` statement. This is a deliberate trade-off to fulfill the assignment requirement for a manual algorithmic implementation; the API response explicitly reports `rows_scanned` and `elapsed_ms` for transparency.
-* **Strategic Denormalization:** Derived columns (`pickup_date`, `pickup_hour`, `time_bucket`, `is_weekend`, `speed`, `fare_per_mile`, `tip_pct`) are pre-stored directly in the table to accelerate dashboard filtering. Note that core lookup tables (zones, vendors, rate codes, payment types) remain fully normalized in 3NF.
-* **Time Bucket Granularity:** The `time_bucket` field classifies hours based on standard weekday patterns and ignores weekends (e.g., Sunday at 8:00 AM is labelled `"morning_rush"`). However, `is_weekend` is stored as a separate column so the dashboard can accurately filter weekend dynamics.
-* **Tipping Data Constraints:** Because cash tips are not tracked by TLC meters, `tip_pct` is calculated exclusively for credit-card transactions.
-* **Network Requirements:** The dashboard requires active internet access to load Leaflet, Chart.js, online map tiles, and Google Fonts.
-* **Database Choice:** SQLite is used to ensure zero-setup project reproducibility; a true production environment would scale up to PostgreSQL with PostGIS extensions.
+```bash
+python -c "
+import psycopg
+conn = psycopg.connect(host='localhost', port=5432, dbname='postgres', user='postgres', password='your_password', autocommit=True)
+conn.cursor().execute('CREATE DATABASE urban_mobility')
+conn.close()
+print('Done')
+"
+```
 
+### 6. Download the raw data files
 
+Place these files in the `data/` folder:
+
+| File | Source |
+| --- | --- |
+| `yellow_tripdata_2019-01.csv` | [NYC TLC Trip Record Data](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) |
+| `taxi_zone_lookup.csv` | Included in this repo |
+| `taxi_zones.geojson` | Included in this repo |
+
+### 7. Run the data pipeline
+
+This cleans the raw data and adds derived features (trip duration, fare per mile, pickup hour, weekend flag, average speed):
+
+```bash
+python data/data_pipeline.py
+```
+
+This takes about 8 minutes and produces `data/yellow_cleaned_tripdata.csv`.
+
+### 8. Create the database tables
+
+```bash
+psql -U postgres -d urban_mobility -f database/schema.sql
+```
+
+If `psql` is not in your PATH, open `database/schema.sql` in pgAdmin and run it there.
+
+### 9. Load the trip data into PostgreSQL
+
+```bash
+python load_trips.py
+```
+
+This loads all 7.6 million rows using PostgreSQL `COPY` and takes about 15 minutes.
+
+## Running the Application
+
+### Start the backend API
+
+```bash
+cd backend
+python run.py
+```
+
+The API runs at http://localhost:5000.
+
+### Open the frontend
+
+Open `frontend/index.html` directly in your browser. No extra server is needed: the page fetches data from the Flask API at `http://localhost:5000`.
+
+If your backend runs on a different port, change `API_BASE` at the top of `frontend/dashboard.js`.
+
+### Verify it works
+
+1. The "Backend Online" badge in the top-right of the dashboard turns green.
+2. The four KPI cards and four charts fill in within a few seconds.
+3. The trip table shows 50 rows per page.
+
+You can also test the API directly:
+
+```bash
+curl http://localhost:5000/api/analytics/hourly-demand
+```
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/api/trips` | Paginated trip records with filters |
+| GET | `/api/analytics/hourly-demand` | Trip count per hour of day |
+| GET | `/api/analytics/revenue-by-zone` | Total revenue per pickup zone |
+| GET | `/api/analytics/average-fare-per-mile` | Avg fare by distance bucket |
+| GET | `/api/analytics/top-revenue-zones` | Top N zones by revenue (`?n=10`) |
+| GET | `/api/zones` | All taxi zones |
+
+### `/api/trips` query parameters
+
+| Parameter | Description |
+| --- | --- |
+| `page`, `limit` | Pagination (the dashboard uses 50 rows per page) |
+| `start_date`, `end_date` | Date range, format `YYYY-MM-DD HH:MM:SS` |
+| `pickup_zone` | Pickup borough name (for example `Manhattan`) |
+| `min_fare`, `max_fare` | Fare range in dollars |
+| `min_distance` | Minimum trip distance in miles |
+
+Example:
+
+```
+GET /api/trips?start_date=2019-01-01 00:00:00&end_date=2019-01-07 23:59:59&pickup_zone=Manhattan&min_fare=10&page=1&limit=50
+```
+
+## Features
+
+- **Filters:** date range, pickup borough, fare range, minimum distance
+- **KPI cards:** total trips, average fare, average distance, average speed
+- **Charts:**
+  - Trips per hour of day (bar chart)
+  - Revenue by borough (horizontal bar chart)
+  - Average fare by distance group (grouped bar chart)
+  - Top 10 revenue zones using a custom merge sort (horizontal bar chart)
+- **Trip table:** paginated, 50 rows per page, with borough colour badges
+- **Live status:** clock and a backend online/offline indicator in the navbar
+- **Responsive design:** layout adapts to tablet and phone screens
+- **Error handling:** a toast message appears if the backend can't be reached or a filter is invalid
+
+## Custom Algorithms
+
+The project implements sorting by hand instead of relying only on built-in functions:
+
+| Where | Algorithm | Purpose |
+| --- | --- | --- |
+| Backend | Merge sort | Ranks the top N revenue zones |
+| Frontend (`dashboard.js`) | Insertion sort | Orders boroughs by revenue for the borough chart |
+
+## Data Cleaning Summary
+
+| Issue | Action Taken |
+| --- | --- |
+| Missing values | Rows with null pickup/dropoff times or location IDs dropped |
+| Duplicate trips | Identified and removed based on all key columns |
+| Fare outliers | Trips with fare < $2.50 or > $500 excluded |
+| Distance outliers | Trips with distance = 0 or > 100 miles excluded |
+| Time anomalies | Trips with duration < 1 min or > 3 hours excluded |
+| Passenger count | Rows with 0 or > 6 passengers excluded |
+
+All excluded records are logged in `data/exclusion_log.csv`.
+
+## Derived Features
+
+| Feature | Formula |
+| --- | --- |
+| `trip_duration_minutes` | (dropoff_time - pickup_time) in minutes |
+| `fare_per_mile` | total_amount / trip_distance |
+| `pickup_hour` | Hour extracted from pickup timestamp |
+| `is_weekend` | 1 if Saturday or Sunday, else 0 |
+| `avg_speed_mph` | trip_distance / (duration / 60) |
+
+## Troubleshooting
+
+| Problem | Fix |
+| --- | --- |
+| Dashboard shows "Backend Offline" | Make sure `python run.py` is running and `API_BASE` in `dashboard.js` matches the port |
+| Charts are empty or you see "Could not load data" | Check the terminal running Flask for errors and confirm the database has data loaded |
+| `psycopg` connection errors | Check the values in `.env` and that PostgreSQL is running |
+| `psql` is not recognized | Add PostgreSQL's `bin` folder to your PATH, or run the SQL in pgAdmin |
+| Page is unstyled or icons and fonts are missing | The dashboard needs internet access for Chart.js and Google Fonts |
+| Browser blocks requests to the API (CORS error) | Make sure CORS is enabled in the Flask app (for example with `flask-cors`) |
+
+## Known Limitations
+
+- The dashboard covers January 2019 only. Filters default to that month.
+- The KPI cards for average fare, distance, and speed are calculated from the current page of trips (50 rows), while "Total Trips" is the full count matching the filters.
+- The dashboard needs internet access to load Chart.js and fonts from CDNs.
+- Loading the full dataset takes about 25 minutes in total (cleaning plus loading).
+
+## Future Improvements
+
+- Calculate KPI averages over the full filtered dataset on the server
+- Add a map view of pickup and drop-off zones using `taxi_zones.geojson`
+- Support more months of data and a month selector
+- Add automated tests for the API and the cleaning scripts
+
+## Acknowledgements
+
+- Data: [NYC Taxi and Limousine Commission (TLC) Trip Record Data](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page)
+- Charts: [Chart.js](https://www.chartjs.org/)
+- Font: [Inter](https://fonts.google.com/specimen/Inter)

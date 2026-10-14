@@ -8,7 +8,7 @@ An interactive web dashboard for exploring NYC Yellow Taxi trip data (January 20
 
 | Item | Link |
 | --- | --- |
-| Video walkthrough (5 min) | [FILL: video link] |
+| Video walkthrough (5 min) | https://www.loom.com/share/7acbad24181a4e89837bd5f26966a0c1       https://www.loom.com/share/c7bfde00351849f190454265f8cda249       |
 | GitHub repository | https://github.com/nabdurahim-art/urban-mobility-analytics |
 | Team participation sheet | 
 https://docs.google.com/spreadsheets/d/15Sz4TBO8d6fXeJ1PU95Zj8LHh8p3loeepdafaxbFk9I/edit?gid=0#gid=0 |

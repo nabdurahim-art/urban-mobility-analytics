@@ -19,7 +19,9 @@ from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-RAW_FILE         = os.path.join(BASE_DIR, "yellow_tripdata_2019-01.csv")
+RAW_PARQUET_FILE = os.path.join(BASE_DIR, "yellow_tripdata_2019-01.parquet")
+RAW_CSV_FILE     = os.path.join(BASE_DIR, "yellow_tripdata_2019-01.csv")
+RAW_FILE         = RAW_PARQUET_FILE if os.path.exists(RAW_PARQUET_FILE) else RAW_CSV_FILE
 ZONE_LOOKUP_FILE = os.path.join(BASE_DIR, "taxi_zone_lookup.csv")
 GEOJSON_FILE     = os.path.join(BASE_DIR, "taxi_zones.geojson")
 CLEANED_FILE     = os.path.join(BASE_DIR, "yellow_cleaned_tripdata.csv")

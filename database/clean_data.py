@@ -1,5 +1,5 @@
 """
-Urban Mobility Data Explorer
+Urban Mobility Analytics
 clean_data.py — Cleans raw yellow taxi trip data
 Run: python3 database/clean_data.py
 

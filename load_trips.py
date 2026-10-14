@@ -7,7 +7,7 @@ HOW TO RUN (from the project root):
     python load_trips.py
 
 Prerequisites:
-  1. Run `python run_schema.py` first to create the tables.
+  1. Apply `database/schema.sql` to the `urban_mobility` database first.
   2. Run `python data/data_pipeline.py` to produce the cleaned CSV.
   3. Make sure your .env DB credentials are correct.
 

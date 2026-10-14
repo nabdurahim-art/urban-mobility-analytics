@@ -1,7 +1,7 @@
 """
 Cleans raw yellow taxi trip data and associates it with zone metadata.
 
-Reads the raw CSV, validates each row, removes duplicates and outliers,
+Reads the raw CSV or Parquet file, validates each row, removes duplicates and outliers,
 enriches with borough/zone info from taxi_zone_lookup.csv and taxi_zones.geojson,
 then writes the cleaned output. Also saves an exclusion log as JSON.
 
@@ -14,7 +14,9 @@ import os
 from datetime import datetime
 
 BASE_DIR         = os.path.dirname(os.path.abspath(__file__))
-RAW_FILE         = os.path.join(BASE_DIR, "yellow_tripdata_2019-01.csv")
+RAW_PARQUET_FILE = os.path.join(BASE_DIR, "yellow_tripdata_2019-01.parquet")
+RAW_CSV_FILE     = os.path.join(BASE_DIR, "yellow_tripdata_2019-01.csv")
+RAW_FILE         = RAW_PARQUET_FILE if os.path.exists(RAW_PARQUET_FILE) else RAW_CSV_FILE
 ZONE_LOOKUP_FILE = os.path.join(BASE_DIR, "taxi_zone_lookup.csv")
 GEOJSON_FILE     = os.path.join(BASE_DIR, "taxi_zones.geojson")
 CLEANED_FILE     = os.path.join(BASE_DIR, "yellow_cleaned_tripdata.csv")
@@ -37,6 +39,8 @@ def log_exclusion(reason):
 
 
 def parse_dt(value):
+    if isinstance(value, datetime):
+        return value
     try:
         return datetime.strptime(value.strip(), "%Y-%m-%d %H:%M:%S")
     except (ValueError, AttributeError):
@@ -184,7 +188,7 @@ def clean_row(row):
         log_exclusion("total_less_than_fare")
         return None
 
-    flag = row.get("store_and_fwd_flag", "N").strip()
+    flag = str(row.get("store_and_fwd_flag") or "N").strip()
     if flag not in ("Y", "N"):
         flag = "N"
 
@@ -210,9 +214,31 @@ def clean_row(row):
     }
 
 
+def iter_raw_rows():
+    """Yield rows from CSV or bounded-size Parquet batches."""
+    if RAW_FILE.lower().endswith(".parquet"):
+        try:
+            import pyarrow.parquet as parquet
+        except ImportError as error:
+            raise RuntimeError(
+                "Reading Parquet requires PyArrow. Install it with "
+                "`python -m pip install -r backend/requirements.txt`."
+            ) from error
+
+        parquet_file = parquet.ParquetFile(RAW_FILE)
+        for batch in parquet_file.iter_batches(batch_size=100_000):
+            yield from batch.to_pylist()
+        return
+
+    with open(RAW_FILE, newline="", encoding="utf-8") as infile:
+        yield from csv.DictReader(infile)
+
+
 def clean():
     if not os.path.exists(RAW_FILE):
-        print(f"ERROR: {RAW_FILE} not found")
+        print("ERROR: raw trip data not found. Expected either:")
+        print(f"  {RAW_PARQUET_FILE}")
+        print(f"  {RAW_CSV_FILE}")
         return
 
     print("Loading dimension tables...")
@@ -240,14 +266,11 @@ def clean():
         "pickup_borough", "pickup_zone", "dropoff_borough", "dropoff_zone",
     ]
 
-    with open(RAW_FILE, newline="", encoding="utf-8") as infile, \
-         open(CLEANED_FILE, "w", newline="", encoding="utf-8") as outfile:
-
-        reader = csv.DictReader(infile)
+    with open(CLEANED_FILE, "w", newline="", encoding="utf-8") as outfile:
         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
         writer.writeheader()
 
-        for row in reader:
+        for row in iter_raw_rows():
             total += 1
             result = clean_row(row)
 

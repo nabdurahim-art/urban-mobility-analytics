@@ -1,0 +1,7 @@
+.env
+__pycache__/
+*.py[cod]
+data/yellow_tripdata_2019-01.csv
+data/yellow_tripdata_2019-01.parquet
+data/yellow_cleaned_tripdata.csv
+data/_temp_enriched.csv

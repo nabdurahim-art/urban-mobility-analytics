@@ -1,4 +1,6 @@
-# Urban Mobility Data Explorer
+# Urban Mobility Analytics
+
+![Urban Mobility Analytics logo](frontend/brand-mark.svg)
 
 An interactive web dashboard for exploring NYC Yellow Taxi trip data (January 2019). Built with Python Flask, PostgreSQL, and vanilla JavaScript with Chart.js.
 
@@ -48,7 +50,7 @@ https://docs.google.com/spreadsheets/d/15Sz4TBO8d6fXeJ1PU95Zj8LHh8p3loeepdafaxbF
 ## Project Structure
 
 ```
-Urban-mobility-data-Explorer/
+urban-mobility-analytics/
 ├── backend/                  # Flask API
 │   ├── app/
 │   │   ├── api/              # Route handlers (trips, analytics)
@@ -68,7 +70,7 @@ Urban-mobility-data-Explorer/
 │   ├── styles.css            # Styling
 │   └── dashboard.js          # Charts, table, and filters
 ├── load_trips.py             # Loads cleaned CSV into PostgreSQL
-├── .env.EXAMPLE              # Template for environment variables
+├── .env.example              # Template for environment variables
 └── README.md
 ```
 
@@ -77,8 +79,8 @@ Urban-mobility-data-Explorer/
 - Python 3.10 or higher
 - PostgreSQL 14 or higher
 - A modern web browser (Chrome, Firefox, Edge) with internet access, because the dashboard loads Chart.js and fonts from CDNs
-- About 2 GB of free disk space for the raw and cleaned CSV files
-- Enough RAM to process a 7.6 million row CSV (8 GB recommended)
+- Several GB of free disk space for the Parquet input, cleaned CSV, and database
+- 8 GB of RAM recommended for processing the 7.6 million trip records
 
 ## Setup Instructions
 
@@ -87,8 +89,8 @@ Run every command from the project root unless stated otherwise.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Abdull-Kudus/Urban-mobility-data-Explorer.git
-cd Urban-mobility-data-Explorer
+git clone https://github.com/nabdurahim-art/urban-mobility-analytics.git
+cd urban-mobility-analytics
 ```
 
 ### 2. Create a virtual environment
@@ -113,7 +115,7 @@ pip install -r backend/requirements.txt
 Copy the example file and fill in your PostgreSQL credentials:
 
 ```bash
-cp .env.EXAMPLE .env
+cp .env.example .env
 ```
 
 Edit `.env`:
@@ -155,9 +157,16 @@ Place these files in the `data/` folder:
 
 | File | Source |
 | --- | --- |
-| `yellow_tripdata_2019-01.csv` | [NYC TLC Trip Record Data](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) |
+| `yellow_tripdata_2019-01.parquet` | [NYC TLC Trip Record Data](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) |
 | `taxi_zone_lookup.csv` | Included in this repo |
 | `taxi_zones.geojson` | Included in this repo |
+
+Download the January 2019 yellow taxi Parquet file into `data/`:
+
+```bash
+curl -L "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2019-01.parquet" \
+  -o data/yellow_tripdata_2019-01.parquet
+```
 
 ### 7. Run the data pipeline
 
@@ -194,11 +203,11 @@ cd backend
 python run.py
 ```
 
-The API runs at http://localhost:5000.
+The API runs at http://localhost:5001 by default. Set `PORT` to use a different port.
 
 ### Open the frontend
 
-Open `frontend/index.html` directly in your browser. No extra server is needed: the page fetches data from the Flask API at `http://localhost:5000`.
+Open http://localhost:5001 in your browser to use the dashboard served by Flask.
 
 If your backend runs on a different port, change `API_BASE` at the top of `frontend/dashboard.js`.
 
@@ -211,7 +220,7 @@ If your backend runs on a different port, change `API_BASE` at the top of `front
 You can also test the API directly:
 
 ```bash
-curl http://localhost:5000/api/analytics/hourly-demand
+curl http://localhost:5001/api/analytics/hourly-demand
 ```
 
 ## API Endpoints

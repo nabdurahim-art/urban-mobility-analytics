@@ -1,4 +1,4 @@
--- Urban Mobility Data Explorer — CockroachDB Schema
+-- Urban Mobility Analytics — PostgreSQL Schema
 
 CREATE TABLE IF NOT EXISTS boroughs (
     borough_id   SERIAL       PRIMARY KEY,

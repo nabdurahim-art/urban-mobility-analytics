@@ -5,8 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description"
-    content="NYC Yellow Taxi Urban Mobility Explorer – interactive dashboard for trip data analysis" />
-  <title>Urban Mobility Explorer | NYC Taxi Data</title>
+    content="Urban Mobility Analytics – NYC Yellow Taxi trip analysis dashboard" />
+  <title>Urban Mobility Analytics | NYC Taxi Data</title>
+  <link rel="icon" type="image/svg+xml" href="brand-mark.svg" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="styles.css" />
@@ -16,14 +17,8 @@
 
   <nav class="navbar">
     <div class="navbar-brand">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="1" y="10" width="22" height="9" rx="2" />
-        <path d="M5 10V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3" />
-        <circle cx="7" cy="19" r="2" />
-        <circle cx="17" cy="19" r="2" />
-        <path d="M9 6l1-3h4l1 3" />
-      </svg>
-      <h1>Urban Mobility <span>Explorer</span></h1>
+      <img class="brand-logo" src="brand-mark.svg" alt="" width="36" height="36" />
+      <h1>Urban Mobility <span>Analytics</span></h1>
     </div>
     <div class="navbar-right">
       <span id="live-clock">--:--:--</span>
@@ -233,7 +228,9 @@
   </main>
 
   <footer class="footer">
-    <p>Urban Mobility Explorer &mdash; NYC Yellow Taxi Dataset (January 2019) &mdash; Built with Flask &amp; Chart.js
+    <p class="footer-brand">
+      <img src="brand-mark.svg" alt="" width="20" height="20" />
+      <span>Urban Mobility Analytics &mdash; NYC Yellow Taxi Dataset (January 2019) &mdash; Built with Flask &amp; Chart.js</span>
     </p>
   </footer>
 

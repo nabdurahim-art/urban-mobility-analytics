@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Urban Mobility Analytics</title>
+  <path fill="#fbbf24" d="M32 3C19.3 3 9 13.3 9 26c0 16.2 19.7 33.1 21.9 35a1.7 1.7 0 0 0 2.2 0C35.3 59.1 55 42.2 55 26 55 13.3 44.7 3 32 3Z"/>
+  <path fill="#0f172a" d="M18 25h7v15h-7zm11-9h7v24h-7zm11-6h7v30h-7z"/>
+  <path fill="none" stroke="#0f172a" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m17 20 9-5 7 3 12-9"/>
+  <circle cx="17" cy="20" r="2.3" fill="#0f172a"/>
+  <circle cx="45" cy="9" r="2.3" fill="#0f172a"/>
+</svg>

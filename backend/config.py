@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
 
-load_dotenv(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 class Config:
     DB_HOST = os.getenv("DB_HOST")
@@ -9,7 +10,7 @@ class Config:
     DB_USER = os.getenv("DB_USER")
     DB_PASSWORD = os.getenv("DB_PASSWORD")
     DB_NAME = os.getenv("DB_NAME")
-    DB_SSL_MODE = "require"
+    DB_SSLMODE = os.getenv("DB_SSLMODE", os.getenv("DB_SSL_MODE", "require"))
 
     DEBUG = False
     TESTING = False
@@ -25,4 +26,4 @@ class ProductionConfig(Config):
 config_map = {
     "development": DevelopmentConfig,
     "production": ProductionConfig,
-}            
+}

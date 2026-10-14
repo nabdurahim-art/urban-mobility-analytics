@@ -84,11 +84,11 @@ body {
   gap: 12px;
 }
 
-.nav-icon {
-  width: 28px;
-  height: 28px;
-  color: var(--yellow);
-  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.45));
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.25));
 }
 
 .navbar-brand h1 {
@@ -744,6 +744,19 @@ tbody td {
   color: #94a3b8;
   background: var(--navy);
   border-top: 3px solid var(--yellow);
+}
+
+.footer-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 100%;
+  gap: 8px;
+}
+
+.footer-brand img {
+  flex: 0 0 auto;
 }
 
 /* ---------- Responsive ---------- */

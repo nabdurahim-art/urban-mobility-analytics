@@ -8,7 +8,8 @@ An interactive web dashboard for exploring NYC Yellow Taxi trip data (January 20
 | --- | --- |
 | Video walkthrough (5 min) | [FILL: video link] |
 | GitHub repository | https://github.com/nabdurahim-art/urban-mobility-analytics |
-| Team participation sheet | https://docs.google.com/spreadsheets/d/15Sz4TBO8d6fXeJ1PU95Zj8LHh8p3loeepdafaxbFk9I/edit?gid=0#gid=0 |
+| Team participation sheet | 
+https://docs.google.com/spreadsheets/d/15Sz4TBO8d6fXeJ1PU95Zj8LHh8p3loeepdafaxbFk9I/edit?gid=0#gid=0 |
 | Technical report (PDF) | [FILL: e.g. docs/technical_report.pdf] |
 
 ## Team
